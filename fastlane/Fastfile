@@ -21,17 +21,10 @@ platform :ios do
   end
 
   desc "Runs unit tests, optionally generating a JUnit report."
-  lane :verify do |options|
-    if ENV['TRAVIS'] then
-      xctest(
-        scheme: 'Wikipedia',
-        workspace: 'Wikipedia.xcworkspace',
-        destination: 'platform=iOS Simulator,name=iPhone 6,OS=9.0'
-      )
-    else
-      # only generate junit reports on jenkins
-      xctool :test, '-reporter junit:build/reports/unit-tests.xml -reporter pretty'
-    end
+  lane :verify do
+    opts = "-reporter pretty"
+    opts += " -reporter junit:build/reports/unit-tests.xml" unless ENV['TRAVIS']
+    xctool :test, opts
   end
 
   desc "Increment the app's build number and commit the changes."
